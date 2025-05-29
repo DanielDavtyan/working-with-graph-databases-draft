@@ -1,7 +1,7 @@
 from django.db import migrations
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ('fingraph_app', '0001_initial'),
     ]
@@ -9,14 +9,15 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             """
-            CREATE OR REPLACE PROPERTY GRAPH IF NOT EXISTS Follow
-            NODE TABLES (Person)
+            CREATE PROPERTY GRAPH IF NOT EXISTS Follow
+            NODE TABLES (Person, )
             EDGE TABLES (
-               Follows
-                    SOURCE KEY (follower_person_id) REFERENCES Person(id),
-                    DESTINATION KEY (followed_person_id) REFERENCES Person(id),
-                    EDGE LABEL IsFollowing
+                Follows
+                    SOURCE KEY(follower_person_id) REFERENCES Person (id)
+                    DESTINATION KEY(followed_person_id) REFERENCES Person (id)
+                    LABEL IsFollowing, 
             )
-            """, reverse_sql='DROP PROPERTY GRAPH IF EXISTS Follow'
+            """,
+            reverse_sql='DROP PROPERTY GRAPH IF EXISTS Follow'
         ),
     ]
