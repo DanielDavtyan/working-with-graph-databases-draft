@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User List</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'fingraph_app/style.css' %}">
+</head>
+<body>
+    <h1>Users</h1>
+    {% if current_user %}
+        <p>You are acting as: <strong>{{ current_user.name }} (ID: {{ current_user.id }})</strong></p>
+    {% else %}
+        <p>Warning: No current user identified. Follow/Unfollow actions might not work as expected.</p>
+        <p>Make sure you have run migrations and loaded initial data if necessary.</p>
+    {% endif %}
+
+    {% if users_data %}
+        <ul>
+            {% for user_info in users_data %}
+                <li>
+                    {{ user_info.person.name }} (ID: {{ user_info.person.id }})
+                    {% if current_user and user_info.person.id != current_user.id %}
+                        {% if user_info.is_following %}
+                            <form action="{% url 'unfollow_user' user_info.person.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit">Unfollow</button>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'follow_user' user_info.person.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit">Follow</button>
+                            </form>
+                        {% endif %}
+                    {% elif current_user and user_info.person.id == current_user.id %}
+                        (This is you)
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No users found in the database.</p>
+        <p>Consider adding some Person objects via the Django admin or a script.</p>
+    {% endif %}
+
+    <p><a href="{% url 'user_list' %}">Refresh List</a></p>
+</body>
+</html>
